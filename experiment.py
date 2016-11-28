@@ -2,6 +2,7 @@ import sys
 import perceptron as P
 import numpy as np
 import matplotlib.pyplot as plt
+import time
 
 def print_graph(test_id):
     start = test_id * 28
@@ -33,11 +34,11 @@ def parse_labels(fname, N):
     file.close()
     return arr
 
-if __name__ == '__main__':
+def main():
     # params to tune
     bias = 0
-    alpha = 1  # ? not sure learning rate decay function here
-    epochs = 20
+    # alpha = 1  # ? not sure learning rate decay function here
+    # epochs = 20
 
     # arrays containing train and test
     train = np.array(parse_features('trainingimages', 5000))
@@ -47,16 +48,25 @@ if __name__ == '__main__':
 
     # initialize weight vectors
     w = np.array([[0 for i in range(784)]for j in range(10)])
-    train_acc = [0 for i in range(epochs)]
+    w = w.astype(float)
+    train_acc = [] # [0 for i in range(epochs)]
 
     # training
-    for j in range(epochs):
+    # for j in range(epochs):
+    epochs = 1
+    while True:
         mistakes = 0
+        alpha = 1000.0/(1000.0+epochs)
         for i in range(5000):
-            mistakes += P.perceptron(w, alpha, train[i], train_labels[i])
+            mistakes += P.perceptron_train(w, alpha, train[i], train_labels[i])
+
+        train_acc.append((5000-mistakes)/(5000.0))      # accuracy so far
+        print train_acc[epochs-1], epochs
         
-        train_acc[j] = (5000-mistakes)/(5000.0)      # accuracy so far
-        print train_acc[j]
+        # stop training if not improving much
+        if epochs != 1 and train_acc[epochs-1] - train_acc[epochs-2] < 0.001:
+            break
+        epochs+=1
     # draw training accuracies in the end
 
     # testing
@@ -88,11 +98,23 @@ if __name__ == '__main__':
         print confusion[i]
 
     # draw training accuracies
+    fig = plt.figure()
+
     plt.xlabel('num of epochs')
     plt.ylabel('training accuracy')
-
-    l1 = plt.plot(range(epochs), train_acc)
-
     plt.title('Training Curve')
-    plt.show()
+    
+    ax = fig.add_subplot(111)
+    for i,j in zip(range(epochs), train_acc):
+        ax.annotate(str("{0:.2f}".format(j)),xy=(i,j))
 
+    plt.plot(range(epochs), train_acc)
+    plt.savefig('training_curve.png', bbox_inches='tight')
+    # plt.show()
+ 
+
+
+if __name__ == '__main__':    
+    start_time = time.time()
+    main()
+    print("--- %s seconds ---" % (time.time() - start_time))

@@ -16,7 +16,7 @@ def perceptron_decision(w, x):    # doesn't matter adding bias or not?
     return c
 
 
-def perceptron(w, r, x, y):
+def perceptron_train(w, r, x, y):
     """updates w by perceptron when needs update 
     @param w: the weights vector
     @param r: the learning rate
@@ -26,8 +26,9 @@ def perceptron(w, r, x, y):
     c = perceptron_decision(w, x)
     if y != c:    # misclassification -> needs update, else do nothing
         w[c] -= r*x
-        for i in range(10):
-            if i != c:
-                w[i] += r*x
+        w[y] += r*x
+        # for i in range(10):
+        #     if i != c:
+        #         w[i] += r*x
         return 1
     return 0
