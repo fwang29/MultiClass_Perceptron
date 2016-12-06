@@ -25,8 +25,8 @@ def perceptron_train(w, r, x, y):
     """
     c = perceptron_decision(w, x)
     if y != c:    # misclassification -> needs update, else do nothing
-        w[c] -= r*x
-        w[y] += r*x
+        w[c] -= r*x     # demo 
+        w[y] += r*x     # promo 
         # for i in range(10):
         #     if i != c:
         #         w[i] += r*x

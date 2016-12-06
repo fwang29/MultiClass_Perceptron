@@ -50,13 +50,14 @@ def main():
     w = np.array([[0 for i in range(784)]for j in range(10)])
     w = w.astype(float)
     train_acc = [] # [0 for i in range(epochs)]
+    test_acc = []
 
     # training
     # for j in range(epochs):
     epochs = 1
     while True:
         mistakes = 0
-        alpha = 1000.0/(1000.0+epochs)
+        alpha = 1.0/(1.0+epochs)
         for i in range(5000):
             mistakes += P.perceptron_train(w, alpha, train[i], train_labels[i])
 
@@ -64,7 +65,19 @@ def main():
         print train_acc[epochs-1], epochs
         
         # stop training if not improving much
-        if epochs != 1 and train_acc[epochs-1] - train_acc[epochs-2] < 0.001:
+        #if epochs != 1 and train_acc[epochs-1] - train_acc[epochs-2] < 0.001:
+
+        ### test accuracy here
+        accuracy = 0
+        for i in range(1000):
+            guess = P.perceptron_decision(w, test[i])
+            if guess == test_labels[i]:
+                accuracy += 1
+        accuracy /= 1000.0    
+        test_acc.append(accuracy)
+        #### 
+
+        if epochs == 13:
             break
         epochs+=1
     # draw training accuracies in the end
@@ -110,6 +123,21 @@ def main():
 
     plt.plot(range(epochs), train_acc)
     plt.savefig('training_curve.png', bbox_inches='tight')
+
+    # draw testing accuracies
+    fig = plt.figure()
+
+    plt.xlabel('num of epochs')
+    plt.ylabel('testing accuracy')
+    plt.title('Testing Curve')
+    
+    ax = fig.add_subplot(111)
+    for i,j in zip(range(epochs), test_acc):
+        ax.annotate(str("{0:.2f}".format(j)),xy=(i,j))
+
+    plt.plot(range(epochs), test_acc)
+    plt.savefig('testing_curve.png', bbox_inches='tight')
+
     # plt.show()
  
 

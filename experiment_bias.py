@@ -41,7 +41,6 @@ def parse_labels(fname, N):
 def main():
     # params to tune
     bias = 0
-    # alpha = 1  # ? not sure learning rate decay function here
     # epochs = 20
 
     # arrays containing train and test
@@ -60,7 +59,7 @@ def main():
     epochs = 1
     while True:
         mistakes = 0
-        alpha = 1000.0/(1000.0+epochs)
+        alpha = 1.0/(1.0+epochs)
         for i in range(5000):
             mistakes += P.perceptron_train(w, alpha, train[i], train_labels[i])
 
@@ -68,7 +67,8 @@ def main():
         print train_acc[epochs-1], epochs
         
         # stop training if not improving much
-        if epochs != 1 and train_acc[epochs-1] - train_acc[epochs-2] < 0.001:
+        #if epochs != 1 and train_acc[epochs-1] - train_acc[epochs-2] < 0.001:
+        if epochs == 20:
             break
         epochs+=1
     # draw training accuracies in the end
